@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     google_application_credentials: Optional[str] = None
     vertex_project_id: Optional[str] = None
 
+    langsmith_tracing: str = "true"
+    langsmith_api_key: Optional[str] = None
+    langsmith_project: str = "medical-agent"  
+    langsmith_endpoint: str = "https://api.smith.langchain.com"  
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 @lru_cache

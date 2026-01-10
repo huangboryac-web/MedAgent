@@ -4,6 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import AIMessage
 
+from utils.llm_utils import safe_execute
 from factories.llm_factory import LLMFactory
 from config import get_settings
 from logger import get_logger
@@ -30,13 +31,16 @@ clarify_prompt = ChatPromptTemplate.from_messages([
 
 clarify_chain = clarify_prompt | llm | StrOutputParser()
 
-def clarify_node(state: Dict[str, Any]):
+async def clarify_node(state: Dict[str, Any]):
     logger.info("🟢 --- NODE: Clarifier Activated ---")
     try:
         last_message = state["messages"][-1].content
         logger.debug(f"Clarifying query: '{last_message[:50]}...'")
         
-        response = clarify_chain.invoke({"messages": state["messages"]})
+        response = await safe_execute(
+            clarify_chain, 
+            {"messages": state["messages"]}
+        )
         logger.info("✅ Clarification request generated.")
         
         return {"messages": [AIMessage(content=response)]}

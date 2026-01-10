@@ -16,3 +16,5 @@ REDIS_AGENT_CACHE = 1
 
 WEBSITE_HOST = settings.website_host
 TEST = settings.test
+
+MAX_RETRIES = 3  

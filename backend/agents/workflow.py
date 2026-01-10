@@ -12,8 +12,11 @@ from agents.medical_rag import (
     generate_node,
     guardrail_node
 )
+from agents.hallucination import hallucination_check_node
+from logger import get_logger
 
 
+logger = get_logger("Workflow")
 workflow = StateGraph(AgentState)
 
 checkpointer = MemorySaver()
@@ -29,6 +32,8 @@ workflow.add_node("grade", grade_documents_node)
 workflow.add_node("web_search", web_search_node)
 workflow.add_node("generate", generate_node)
 workflow.add_node("guardrail", guardrail_node)
+
+workflow.add_node("hallucination_check", hallucination_check_node)
 
 
 workflow.set_entry_point("router")
@@ -65,7 +70,24 @@ workflow.add_conditional_edges(
 )
 
 workflow.add_edge("web_search", "generate")
-workflow.add_edge("generate", "guardrail")
+workflow.add_edge("generate", "hallucination_check")
+
+def check_hallucination(state):
+    if state.get("is_grounded", True):
+        return "guardrail"
+    else:
+        logger.warning("Hallucination detected - looping back to web search.")
+        return "web_search" 
+
+workflow.add_conditional_edges(
+    "hallucination_check",
+    check_hallucination,
+    {
+        "guardrail": "guardrail",
+        "web_search": "web_search"
+    }
+)
+
 workflow.add_edge("guardrail", END)
 
 

@@ -4,6 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.messages import AIMessage
 
+from utils.llm_utils import safe_execute
 from factories.llm_factory import LLMFactory
 from config import get_settings
 from database.vector_db import retrieve_documents, index_documents
@@ -40,7 +41,7 @@ batch_grader_prompt = ChatPromptTemplate.from_messages([
 ])
 batch_grader_chain = batch_grader_prompt | llm | JsonOutputParser()
 
-def grade_documents_node(state: Dict[str, Any]):
+async def grade_documents_node(state: Dict[str, Any]):
     logger.info("⚖️ --- NODE: Grader ---")
     question = state["question"]
     documents = state["documents"]
@@ -51,7 +52,10 @@ def grade_documents_node(state: Dict[str, Any]):
     formatted_docs = "\n".join([f"Doc {i}: {d.page_content}" for i, d in enumerate(documents)])
     
     try:
-        response = batch_grader_chain.invoke({"question": question, "formatted_docs": formatted_docs})
+        response = await safe_execute(
+            batch_grader_chain, 
+            {"question": question, "formatted_docs": formatted_docs}
+        )
         scores = response.get("scores", [])
         
         filtered_docs = [
@@ -65,12 +69,28 @@ def grade_documents_node(state: Dict[str, Any]):
         
     except Exception as e:
         logger.error(f"Grading Error: {e}", exc_info=True)
-        return {"documents": documents, "is_answerable": True} # Fail-open
+        return {"documents": documents, "is_answerable": True} 
 
-def web_search_node(state: Dict[str, Any]):
+reform_prompt = ChatPromptTemplate.from_messages([
+    ("system", """Reformulate the user's question into a concise, effective web search query. 
+    Focus on key terms, remove conversational filler, and optimize for medical accuracy.
+    Output only the reformed query string."""),
+    ("human", "{question}")
+])
+reform_chain = reform_prompt | llm | StrOutputParser()
+
+async def web_search_node(state: Dict[str, Any]):
     logger.info("🌐 --- NODE: Web Search ---")
     question = state["question"]
-    new_docs = perform_web_search(question)
+    
+    try:
+        reformed_query = await safe_execute(reform_chain, {"question": question})
+        logger.info(f"Reformed query: {reformed_query}")
+    except Exception as e:
+        logger.error(f"Query reform error: {e}. Using original.")
+        reformed_query = question
+    
+    new_docs = perform_web_search(reformed_query)
     
     if new_docs:
         index_documents(new_docs)
@@ -85,7 +105,7 @@ generate_prompt = ChatPromptTemplate.from_messages([
 ])
 generate_chain = generate_prompt | llm | StrOutputParser()
 
-def generate_node(state: Dict[str, Any]):
+async def generate_node(state: Dict[str, Any]):
     logger.info("🧠 --- NODE: Generator ---")
     question = state["question"]
     documents = state["documents"]
@@ -96,7 +116,10 @@ def generate_node(state: Dict[str, Any]):
     context_str = "\n\n".join([f"{d.page_content} (Source: {d.metadata.get('source','?')})" for d in documents])
     
     try:
-        generation = generate_chain.invoke({"context": context_str, "question": question})
+        generation = await safe_execute(
+            generate_chain, 
+            {"context": context_str, "question": question}
+        )
         return {"generation": generation}
     except Exception as e:
         logger.error(f"Generation Error: {e}", exc_info=True)
@@ -109,13 +132,13 @@ safety_prompt = ChatPromptTemplate.from_messages([
     2. Hate speech.
     3. Specific medical diagnosis (advice is okay, diagnosis is not).
     
-    Return JSON: {"status": "SAFE" or "UNSAFE", "reason": "..."}
+    Return JSON: {{"status": "SAFE" or "UNSAFE", "reason": "..."}}.
     """),
     ("human", "{generation}")
 ])
 safety_chain = safety_prompt | llm | JsonOutputParser()
 
-def guardrail_node(state: Dict[str, Any]):
+async def guardrail_node(state: Dict[str, Any]):
     logger.info("🛡️ --- NODE: Guardrail ---")
     generation = state.get("generation", "")
     
@@ -126,7 +149,7 @@ def guardrail_node(state: Dict[str, Any]):
         return {"messages": [AIMessage(content="Request blocked due to safety guidelines.")]}
 
     try:
-        res = safety_chain.invoke({"generation": generation})
+        res = await safe_execute(safety_chain, {"generation": generation})
         if res.get("status") == "UNSAFE":
             logger.warning(f"Blocked by LLM: {res.get('reason')}")
             return {"messages": [AIMessage(content="Response blocked by safety filters.")]}

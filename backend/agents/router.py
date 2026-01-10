@@ -1,8 +1,8 @@
-import logging
 from typing import Dict, Any
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
+from utils.llm_utils import safe_execute
 from logger import get_logger
 from factories.llm_factory import LLMFactory
 from config import get_settings
@@ -30,12 +30,15 @@ router_prompt = ChatPromptTemplate.from_messages([
 
 router_chain = router_prompt | llm | StrOutputParser()
 
-def route_query(state: Dict[str, Any]):
+async def route_query(state: Dict[str, Any]):
     logger.info("🚦 --- NODE: Router ---")
     query = state["messages"][-1].content
     
     try:
-        category = router_chain.invoke({"query": query}).strip().lower()
+        category = await safe_execute(
+            router_chain, 
+            {"query": query}
+        )
         logger.info(f"Routing '{query[:30]}...' -> {category.upper()}")
         
         if "medical" in category: return {"next": "medical"}

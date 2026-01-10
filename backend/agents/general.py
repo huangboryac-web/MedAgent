@@ -4,6 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import AIMessage
 
+from utils.llm_utils import safe_execute
 from factories.llm_factory import LLMFactory
 from config import get_settings
 from logger import get_logger
@@ -33,10 +34,13 @@ general_prompt = ChatPromptTemplate.from_messages([
 
 general_chain = general_prompt | llm | StrOutputParser()
 
-def general_node(state: Dict[str, Any]):
+async def general_node(state: Dict[str, Any]):
     logger.info("🔵 --- NODE: General Agent Activated ---")
     try:
-        response = general_chain.invoke({"messages": state["messages"]})
+        response = await safe_execute(
+            general_chain, 
+            {"messages": state["messages"]}
+        )
         logger.info("✅ General response generated.")
         return {"messages": [AIMessage(content=response)]}
     except Exception as e:
