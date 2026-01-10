@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+langchain
+langchain-openai
+langchain-chroma
+langchain-community
+langchain-redis
+langgraph
+tavily-python
+rank_bm25
+redis
+pydantic
