@@ -28,6 +28,7 @@ export const ThinkingIndicator: React.FC<Props> = ({ steps, status }) => {
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:border-gray-700 dark:bg-gray-800/50">
         <button
           onClick={() => setIsOpen(!isOpen)}
+          disabled={steps.length === 0}
           className="flex w-full items-center gap-3 bg-gray-50/50 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 transition-colors"
         >
           <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400">
@@ -42,13 +43,26 @@ export const ThinkingIndicator: React.FC<Props> = ({ steps, status }) => {
             {status === "thinking" ? "Thinking Process..." : "Thought Process"}
           </span>
 
-          {isOpen ? <LuChevronDown size={16} /> : <LuChevronRight size={16} />}
+          {steps.length > 0 && (
+            <div className="text-gray-400">
+              {isOpen ? (
+                <LuChevronDown size={16} />
+              ) : (
+                <LuChevronRight size={16} />
+              )}
+            </div>
+          )}
         </button>
 
         {isOpen && (
-          <div className="border-t border-gray-100 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900/30">
+          <div
+            className={`border-t border-gray-100 bg-white ${
+              steps.length > 0 ? "px-4 py-3" : ""
+            } dark:border-gray-700 dark:bg-gray-900/30`}
+          >
             <div className="flex flex-col gap-3">
               {steps.map((step, idx) => {
+                if (!step) return null;
                 const isLast = idx === steps.length - 1;
                 const isActive = isLast && status === "thinking";
 
