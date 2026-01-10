@@ -72,9 +72,15 @@ async def grade_documents_node(state: Dict[str, Any]):
         return {"documents": documents, "is_answerable": True} 
 
 reform_prompt = ChatPromptTemplate.from_messages([
-    ("system", """Reformulate the user's question into a concise, effective web search query. 
-    Focus on key terms, remove conversational filler, and optimize for medical accuracy.
-    Output only the reformed query string."""),
+    ("system", """You are a Search Query Optimizer.
+    Task: Convert the user's medical question into a crisp keyword-based search query.
+    
+    Rules:
+    1. Remove conversational filler ("Hello", "I was wondering").
+    2. Focus on medical terms.
+    3. MAX 5 words.
+    4. Do NOT output explanations or thinking tags. Just the query.
+    """),
     ("human", "{question}")
 ])
 reform_chain = reform_prompt | llm | StrOutputParser()
