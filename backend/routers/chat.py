@@ -5,7 +5,7 @@ from logger import get_logger
 from database.db import insert_chat_by_session_id
 from database.semantic_cache import get_cache
 from models import ChatRequest
-from agents.workflow import app_graph
+from agents.workflow import get_app_graph
 
 router = APIRouter()
 logger = get_logger("Router:Chat")
@@ -29,7 +29,13 @@ async def chat_endpoint(request: ChatRequest):
                 "configurable": {"thread_id": request.session_id},
                 "metadata": {"user_id": "user", "session_id": request.session_id} 
             }
-            output = await app_graph.ainvoke(inputs, config=config)
+            graph = get_app_graph()
+    
+            if graph is None:
+                logger.error("❌ Attempted to access app_graph before initialization")
+                raise Exception("❌ Attempted to access app_graph before initialization")
+
+            output = await graph.ainvoke(inputs, config=config)
             answer = output["messages"][-1].content
             
             if "System Error" not in answer:
