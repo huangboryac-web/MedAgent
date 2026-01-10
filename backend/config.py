@@ -13,6 +13,7 @@ class Settings(BaseSettings):
 
     llm_provider: str = "ollama" 
     llm_model: str = "llama3"
+    embedding_model: str
 
     openai_api_key: Optional[str] = None
     

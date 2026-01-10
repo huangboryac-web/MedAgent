@@ -18,3 +18,5 @@ WEBSITE_HOST = settings.website_host
 TEST = settings.test
 
 MAX_RETRIES = 3  
+
+TALIVY_MAX_SEARCH = 3

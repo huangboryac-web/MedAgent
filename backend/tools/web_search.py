@@ -5,6 +5,7 @@ from langchain_core.documents import Document
 
 from config import get_settings
 from logger import get_logger
+from constants import TALIVY_MAX_SEARCH
 
 logger = get_logger("Tools")
 settings = get_settings()
@@ -15,7 +16,7 @@ else:
     os.environ["TAVILY_API_KEY"] = settings.tavily_api_key
 
 tavily_tool = TavilySearchResults(
-    max_results=3,
+    max_results=TALIVY_MAX_SEARCH,
     search_depth="advanced",
     include_answer=True,
     include_raw_content=True

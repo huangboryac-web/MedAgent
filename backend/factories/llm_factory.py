@@ -2,6 +2,7 @@ import os
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from config import get_settings
+from utils.ollama_cleaner import CleanChatOllama
 
 settings = get_settings()
 
@@ -46,7 +47,10 @@ class LLMFactory:
         elif provider == "ollama":
             if not ChatOllama:
                 raise ImportError("langchain-ollama is not installed.")
-            return ChatOllama(model=model_name, temperature=temperature)
+            return CleanChatOllama(
+                model=model_name, 
+                temperature=temperature
+            )
         
         elif provider == "openai":
             if not ChatOpenAI:

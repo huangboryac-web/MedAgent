@@ -36,7 +36,7 @@ def get_embedding_model() -> Embeddings:
         if provider == "openai":
             if not OpenAIEmbeddings: raise ImportError("langchain-openai missing")
             return OpenAIEmbeddings(
-                model="text-embedding-3-small", 
+                model=settings.embedding_model, 
                 api_key=settings.openai_api_key or os.getenv("OPENAI_API_KEY")
             )
         
@@ -44,19 +44,19 @@ def get_embedding_model() -> Embeddings:
             if not VertexAIEmbeddings: raise ImportError("langchain-google-vertexai missing")
             if settings.google_application_credentials:
                 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = settings.google_application_credentials
-            return VertexAIEmbeddings(model="gemini-embedding-001")
+            return VertexAIEmbeddings(model=settings.embedding_model)
             
         elif provider == "ollama":
             if not OllamaEmbeddings: raise ImportError("langchain-ollama missing")
-            return OllamaEmbeddings(model="nomic-embed-text")
+            return OllamaEmbeddings(model=settings.embedding_model or settings.llm_model)
             
         else:
             if not HuggingFaceEmbeddings: raise ImportError("langchain-huggingface missing")
             logger.info("Using Local HuggingFace Fallback")
-            return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+            return HuggingFaceEmbeddings(model_name=settings.embedding_model)
 
     except Exception as e:
         logger.error(f"Failed to load {provider} embeddings: {e}. Falling back to HuggingFace.")
         if HuggingFaceEmbeddings:
-            return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+            return HuggingFaceEmbeddings(model_name=settings.embedding_model)
         raise RuntimeError("No embedding libraries available.")
