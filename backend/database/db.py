@@ -34,3 +34,19 @@ def insert_chat_by_session_id(session_id: str, chat: str, role: Literal['user', 
                  (session_id, role, chat))
     conn.commit()
     conn.close()
+
+def get_all_sessions():
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT session_id, MAX(timestamp) as last_active 
+            FROM chat_history 
+            GROUP BY session_id 
+            ORDER BY last_active DESC
+        """)
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
+    finally:
+        conn.close()
