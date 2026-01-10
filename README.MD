@@ -8,7 +8,8 @@ This project demonstrates an intelligent medical assistant that classifies user 
 
 ## Demo
 
-[![MedAgent Demo](./assets/homepage.png)](./assets/MedAgent-Demo.mp4)
+![MedAgent Demo](./assets/MedAgent-Demo.gif)
+Original demo video: `assets/MedAgent-Demo.mp4`
 
 ## Features
 
@@ -123,7 +124,7 @@ graph TD
 | Layer             | Technology                                    |
 | :---------------- | :-------------------------------------------- |
 | **Orchestration** | LangGraph, LangChain                          |
-| **LLM Providers** | Vertex AI, Ollama, OpenAI                    |
+| **LLM Providers** | Vertex AI, Ollama, OpenAI                     |
 | **Vector DB**     | ChromaDB, FAISS (Cache)                       |
 | **Database**      | SQLite (History), Redis (State/Checkpointing) |
 | **Frontend**      | React, Tailwind CSS, Vite                     |
