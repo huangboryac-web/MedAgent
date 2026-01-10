@@ -1,57 +1,83 @@
-import { useState, useEffect, useCallback } from "react";
-import { Role, type Message } from "../types";
+import { useState, useCallback, useEffect } from "react";
+import type { Message } from "../types";
 import { api } from "../services/api";
-import { CHAT_SESSION_UPDATE_EVENT } from "../constants";
 
-export const useChat = (sessionId: string | undefined) => {
+export const useChat = (sessionId?: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [thinkingSteps, setThinkingSteps] = useState<string[]>([]);
+  const [isThinking, setIsThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
 
   useEffect(() => {
     if (!sessionId) return;
 
-    const loadHistory = async () => {
-      setIsLoading(true);
+    const fetchHistory = async () => {
+      setIsHistoryLoading(true);
+      setError(null);
+      setThinkingSteps([]);
+      setIsThinking(false);
+
       try {
         const history = await api.getHistory(sessionId);
         setMessages(history);
-        setError(null);
       } catch (err) {
-        setError("Failed to load chat history");
+        console.error("Failed to load history:", err);
+        setError("Failed to load chat history.");
       } finally {
-        setIsLoading(false);
+        setIsHistoryLoading(false);
       }
     };
-    loadHistory();
+
+    fetchHistory();
   }, [sessionId]);
 
   const sendMessage = useCallback(
-    async (content: string) => {
-      if (!content.trim() || !sessionId) return;
+    async (query: string) => {
+      if (!sessionId) return;
 
-      const userMsg: Message = { role: Role.USER, content };
+      const userMsg: Message = { role: "user", content: query };
       setMessages((prev) => [...prev, userMsg]);
+
       setIsLoading(true);
+      setIsThinking(true);
+      setThinkingSteps([]);
       setError(null);
 
       try {
-        const data = await api.sendMessage(content, sessionId);
-        const botMsg: Message = {
-          role: Role.ASSISTANT,
-          content: data.response,
-        };
-        setMessages((prev) => [...prev, botMsg]);
-
-        window.dispatchEvent(new Event(CHAT_SESSION_UPDATE_EVENT));
+        await api.sendMessage(query, sessionId, (event) => {
+          if (event.type === "step") {
+            setThinkingSteps((prev) => {
+              if (prev[prev.length - 1] === event.node) return prev;
+              return [...prev, event.node];
+            });
+          } else if (event.type === "answer") {
+            setMessages((prev) => [
+              ...prev,
+              { role: "assistant", content: event.content },
+            ]);
+          } else if (event.type === "error") {
+            throw new Error(event.content);
+          }
+        });
       } catch (err) {
-        setError("Failed to send message");
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setIsLoading(false);
+        setIsThinking(false);
       }
     },
     [sessionId]
   );
 
-  return { messages, isLoading, error, sendMessage };
+  return {
+    messages,
+    isLoading: isLoading || isHistoryLoading,
+    isThinking,
+    thinkingSteps,
+    sendMessage,
+    error,
+  };
 };

@@ -1,14 +1,18 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, type FC } from "react";
 import { useParams, Navigate } from "react-router-dom";
+import { LuMenu } from "react-icons/lu";
 import { ChatSidebar } from "../components/Sidebar";
 import { ChatMessage } from "../components/ChatMessage";
 import { ChatInput } from "../components/ChatInput";
+import { ThinkingIndicator } from "../components/ThinkingIndicator";
 import { useChat } from "../hooks/useChat";
-import { LuMenu } from "react-icons/lu";
 
-export const ChatPage: React.FC = () => {
+export const ChatPage: FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
-  const { messages, isLoading, sendMessage, error } = useChat(sessionId);
+
+  const { messages, isLoading, isThinking, thinkingSteps, sendMessage, error } =
+    useChat(sessionId);
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(
@@ -19,7 +23,7 @@ export const ChatPage: React.FC = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, isLoading]);
+  }, [messages, isThinking, thinkingSteps]);
 
   if (!sessionId) return <Navigate to="/" />;
 
@@ -44,9 +48,23 @@ export const ChatPage: React.FC = () => {
               <h1 className="text-base font-semibold text-gray-800 dark:text-white">
                 Medical Assistant
               </h1>
-              <span className="text-[10px] font-medium uppercase tracking-wider text-green-600 dark:text-green-400">
-                Online
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span
+                    className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                      isLoading ? "bg-teal-400" : "bg-green-400"
+                    }`}
+                  ></span>
+                  <span
+                    className={`relative inline-flex rounded-full h-2 w-2 ${
+                      isLoading ? "bg-teal-500" : "bg-green-500"
+                    }`}
+                  ></span>
+                </span>
+                <span className="text-[10px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  {isLoading ? "Processing" : "Online"}
+                </span>
+              </div>
             </div>
           </div>
         </header>
@@ -59,8 +77,8 @@ export const ChatPage: React.FC = () => {
               </div>
             )}
 
-            {messages.length === 0 && !isLoading && (
-              <div className="flex flex-col items-center justify-center mt-20 text-center">
+            {messages.length === 0 && !isLoading && !error && (
+              <div className="flex flex-col items-center justify-center mt-20 text-center animate-in fade-in zoom-in duration-500">
                 <div className="mb-4 rounded-full bg-blue-100 p-4 dark:bg-blue-900/30">
                   <span className="text-3xl">👋</span>
                 </div>
@@ -78,16 +96,11 @@ export const ChatPage: React.FC = () => {
               <ChatMessage key={index} message={msg} />
             ))}
 
-            {isLoading && (
-              <div className="flex justify-start mb-6 animate-pulse">
-                <div className="flex items-center gap-2 rounded-2xl rounded-tl-none bg-gray-100 px-4 py-3 text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                  <div className="h-2 w-2 rounded-full bg-gray-400 animate-bounce"></div>
-                  <div className="h-2 w-2 rounded-full bg-gray-400 animate-bounce delay-75"></div>
-                  <div className="h-2 w-2 rounded-full bg-gray-400 animate-bounce delay-150"></div>
-                </div>
-              </div>
+            {isLoading && (isThinking || thinkingSteps.length > 0) && (
+              <ThinkingIndicator steps={thinkingSteps} status="thinking" />
             )}
-            <div ref={scrollRef} />
+
+            <div ref={scrollRef} className="h-4" />
           </div>
         </main>
 

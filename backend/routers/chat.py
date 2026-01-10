@@ -1,4 +1,6 @@
+import json
 from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
 from langchain_core.messages import HumanMessage
 
 from logger import get_logger
@@ -14,37 +16,45 @@ cache = get_cache()
 @router.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     logger.info(f"📩 Query [{request.session_id}]: {request.query}")
-    
     insert_chat_by_session_id(request.session_id, request.query, "user")
-    
-    cached_ans = await cache.check_cache(request.query)
-    if cached_ans:
-        logger.info("⚡ Cache Hit")
-        answer = cached_ans
-    else:
+
+    async def event_generator():
+        cached_ans = await cache.check_cache(request.query)
+        if cached_ans:
+            logger.info("⚡ Cache Hit")
+            yield f"data: {json.dumps({'type': 'step', 'node': 'cache'})}\n\n"
+            yield f"data: {json.dumps({'type': 'answer', 'content': cached_ans})}\n\n"
+            return
+
         try:
             inputs = {"messages": [HumanMessage(content=request.query)]}
-
             config = {
                 "configurable": {"thread_id": request.session_id},
                 "metadata": {"user_id": "user", "session_id": request.session_id} 
             }
             graph = get_app_graph()
-    
-            if graph is None:
-                logger.error("❌ Attempted to access app_graph before initialization")
-                raise Exception("❌ Attempted to access app_graph before initialization")
 
-            output = await graph.ainvoke(inputs, config=config)
-            answer = output["messages"][-1].content
+            if graph is None:
+                yield f"data: {json.dumps({'type': 'error', 'content': 'Graph not initialized'})}\n\n"
+                return
+
+            final_answer = ""
+            async for output in graph.astream(inputs, config=config, stream_mode="updates"):
+                for node_name, state_update in output.items():
+                    
+                    yield f"data: {json.dumps({'type': 'step', 'node': node_name})}\n\n"
+                    
+                    if node_name in ["generate", "guardrail", "general", "clarifier"]:
+                         if "messages" in state_update:
+                             final_answer = state_update["messages"][-1].content
+
+            if final_answer:
+                await cache.update_cache(request.query, final_answer)
+                insert_chat_by_session_id(request.session_id, final_answer, "assistant")
+                yield f"data: {json.dumps({'type': 'answer', 'content': final_answer})}\n\n"
             
-            if "System Error" not in answer:
-                await cache.update_cache(request.query, answer)
-                
         except Exception as e:
             logger.error(f"Agent Failure: {e}", exc_info=True)
-            answer = "I'm sorry, I encountered a system error. Please try again."
+            yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
 
-    insert_chat_by_session_id(request.session_id, answer, "assistant")
-    
-    return {"response": answer}
+    return StreamingResponse(event_generator(), media_type="text/event-stream")

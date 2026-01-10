@@ -21,6 +21,11 @@ export interface Session {
 
 export type Theme = "light" | "dark" | "system";
 
+export type StreamEvent =
+  | { type: "step"; node: string }
+  | { type: "answer"; content: string }
+  | { type: "error"; content: string };
+
 export enum Role {
   USER = "user",
   ASSISTANT = "assistant",
