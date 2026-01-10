@@ -23,6 +23,7 @@ This project demonstrates an intelligent medical assistant that classifies user 
 - **Databases**: SQLite for chat history, Chroma for vector store, Redis for agent checkpointing.
 - **Configurable LLMs/Embeddings**: Supports Ollama, OpenAI and Vertex AI.
 - **Logging & Monitoring**: Structured logging (console and file); optional LangSmith tracing.
+- **Server Side Events**: Events directly streamed to frontend using SSE after each step done by agent.
 
 ## How It Works: Agentic Workflow
 
@@ -70,7 +71,6 @@ The agent uses LangGraph for the workflow and Server-Sent Events (SSE) to stream
 ### Architecture Diagram
 
 ```mermaid
-
 graph TD
     %% Define Nodes
     Start((Start)) --> A[User Query]
@@ -102,10 +102,10 @@ graph TD
     J --> K
     K --> End((End))
 
-    %% Styling
-    style B fill:#f9f,stroke:#333,stroke-width:2px
-    style F fill:#f9f,stroke:#333,stroke-width:2px
-    style I fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#add8e6,stroke:#333,stroke-width:2px
+    style F fill:#add8e6,stroke:#333,stroke-width:2px
+    style I fill:#add8e6,stroke:#333,stroke-width:2px
+
     style K fill:#bbf,stroke:#333,stroke-width:2px
     style Knowledge_Engine fill:#f5f5f5,stroke:#999,stroke-dasharray: 5 5
 ```
