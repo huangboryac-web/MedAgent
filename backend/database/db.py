@@ -50,3 +50,11 @@ def get_all_sessions():
         return [dict(row) for row in rows]
     finally:
         conn.close()
+
+def delete_chat_by_session_id(session_id: str):
+    conn = sqlite3.connect(DB_NAME)
+    try:
+        conn.execute("DELETE FROM chat_history WHERE session_id = ?", (session_id,))
+        conn.commit()
+    finally:
+        conn.close()

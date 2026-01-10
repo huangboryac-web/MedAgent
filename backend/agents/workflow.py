@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.redis.aio import AsyncRedisSaver
-# from redis.asyncio import Redis
 
 from agents.state import AgentState
 from agents.router import route_query

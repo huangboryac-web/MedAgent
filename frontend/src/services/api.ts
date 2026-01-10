@@ -33,4 +33,14 @@ export const api = {
     if (!res.ok) throw new Error("Failed to send message");
     return res.json();
   },
+
+  deleteSession: async (
+    sessionId: string
+  ): Promise<{ status: string; message: string }> => {
+    const res = await fetch(`${API_BASE_URL}/session/${sessionId}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Failed to delete session");
+    return res.json();
+  },
 };

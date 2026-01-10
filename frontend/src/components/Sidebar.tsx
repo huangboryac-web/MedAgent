@@ -9,6 +9,7 @@ import {
   LuActivity,
   LuX,
   LuLoader,
+  LuTrash2,
 } from "react-icons/lu";
 import type { Session } from "../types";
 import { CHAT_SESSION_UPDATE_EVENT } from "../constants";
@@ -26,6 +27,8 @@ export const ChatSidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
+
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const fetchSessions = async (isBackground = false) => {
     if (!isBackground) setLoading(true);
@@ -60,6 +63,22 @@ export const ChatSidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
       console.error("Failed to create new chat", err);
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleDeleteSession = async () => {
+    if (!deleteTarget) return;
+
+    try {
+      await api.deleteSession(deleteTarget);
+      if (sessionId === deleteTarget) {
+        navigate("/");
+      }
+      fetchSessions(true);
+    } catch (err) {
+      console.error("Failed to delete session", err);
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -165,28 +184,41 @@ export const ChatSidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
                           key={session.session_id}
                           to={`/chat/${session.session_id}`}
                           onClick={() => window.innerWidth < 768 && onClose()}
-                          className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors ${
+                          className={`flex w-full justify-between rounded-lg px-3 py-3 text-sm transition-colors ${
                             isActive
                               ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
                               : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
                           }`}
                         >
-                          <LuMessageSquare
-                            size={16}
-                            className={
-                              isActive ? "text-blue-400" : "text-slate-600"
-                            }
-                          />
-                          <div className="flex flex-col overflow-hidden text-left">
-                            <span className="truncate font-medium">
-                              {isActive
-                                ? "Current Session"
-                                : `Session ${session.session_id.slice(0, 4)}`}
-                            </span>
-                            <span className="truncate text-[10px] text-slate-600 font-mono">
-                              {session.session_id.slice(0, 8)}
-                            </span>
+                          <div className="flex  items-center gap-3">
+                            <LuMessageSquare
+                              size={16}
+                              className={
+                                isActive ? "text-blue-400" : "text-slate-600"
+                              }
+                            />
+                            <div className="flex flex-col overflow-hidden text-left">
+                              <span className="truncate font-medium">
+                                {isActive
+                                  ? "Current Session"
+                                  : `Session ${session.session_id.slice(0, 4)}`}
+                              </span>
+                              <span className="truncate text-[10px] text-slate-600 font-mono">
+                                {session.session_id.slice(0, 8)}
+                              </span>
+                            </div>
                           </div>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setDeleteTarget(session.session_id);
+                            }}
+                            className="p-1.5 hover:bg-red-900/30 hover:text-red-400 rounded-md transition-all"
+                            title="Delete Session"
+                          >
+                            <LuTrash2 size={14} />
+                          </button>
                         </Link>
                       );
                     })
@@ -209,6 +241,43 @@ export const ChatSidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
           </div>
         </div>
       </div>
+      {deleteTarget && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setDeleteTarget(null)}
+          />
+
+          <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-500">
+              <LuTrash2 size={24} />
+            </div>
+
+            <h3 className="mb-2 text-lg font-bold text-white">
+              Delete Consultation?
+            </h3>
+            <p className="mb-6 text-sm text-slate-400">
+              This action cannot be undone. All messages in this session will be
+              permanently removed.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="flex-1 rounded-lg bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-slate-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteSession}
+                className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
