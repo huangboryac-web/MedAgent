@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { Role, type Message } from "../types";
 import { LuBot, LuUser } from "react-icons/lu";
+import ReactMarkdown from "react-markdown";
 
 interface Props {
   message: Message;
@@ -37,7 +38,27 @@ export const ChatMessage: FC<Props> = ({ message }) => {
               : "bg-blue-600 text-white shadow-blue-500/20 rounded-tr-none"
           }`}
         >
-          <div className="whitespace-pre-wrap">{message.content}</div>
+          {isBot ? (
+            <div className="prose prose-invert max-w-none">
+              <ReactMarkdown
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a {...props} className="text-blue-500 hover:underline" />
+                  ),
+                  ul: ({ node, ...props }) => (
+                    <ul {...props} className="list-disc pl-4" />
+                  ),
+                  ol: ({ node, ...props }) => (
+                    <ol {...props} className="list-decimal pl-4" />
+                  ),
+                }}
+              >
+                {message.content}
+              </ReactMarkdown>
+            </div>
+          ) : (
+            <div className="whitespace-pre-wrap">{message.content}</div> // Keep plain for user
+          )}
         </div>
       </div>
     </div>

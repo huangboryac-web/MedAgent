@@ -4,7 +4,7 @@ import { ChatSidebar } from "../components/Sidebar";
 import { ChatMessage } from "../components/ChatMessage";
 import { ChatInput } from "../components/ChatInput";
 import { useChat } from "../hooks/useChat";
-import { LuMenu, LuMoveVertical } from "react-icons/lu";
+import { LuMenu } from "react-icons/lu";
 
 export const ChatPage: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -49,10 +49,6 @@ export const ChatPage: React.FC = () => {
               </span>
             </div>
           </div>
-
-          <button className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
-            <LuMoveVertical size={20} />
-          </button>
         </header>
 
         <main className="flex-1 overflow-y-auto scroll-smooth">

@@ -23,14 +23,6 @@ export const ChatInput: FC<Props> = ({ onSend, disabled }) => {
         onSubmit={handleSubmit}
         className="mx-auto flex max-w-4xl items-center gap-3 rounded-xl border border-gray-200 bg-white p-2 shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:shadow-none focus-within:ring-2 focus-within:ring-blue-500/50 transition-all"
       >
-        <button
-          type="button"
-          disabled={disabled}
-          className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
-        >
-          <LuPaperclip size={20} />
-        </button>
-
         <input
           type="text"
           value={input}
