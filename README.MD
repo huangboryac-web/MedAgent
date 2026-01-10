@@ -72,6 +72,8 @@ The agent uses LangGraph for the workflow and Server-Sent Events (SSE) to stream
 
 ```mermaid
 graph TD
+    classDef default fill:#000,stroke:#fff,stroke-width:1px,color:#fff
+
     %% Define Nodes
     Start((Start)) --> A[User Query]
     A --> B{Router LLM}
@@ -102,12 +104,18 @@ graph TD
     J --> K
     K --> End((End))
 
-    style B fill:#add8e6,stroke:#333,stroke-width:2px
-    style F fill:#add8e6,stroke:#333,stroke-width:2px
-    style I fill:#add8e6,stroke:#333,stroke-width:2px
+    %% Styling Specific Nodes
 
-    style K fill:#bbf,stroke:#333,stroke-width:2px
-    style Knowledge_Engine fill:#f5f5f5,stroke:#999,stroke-dasharray: 5 5
+    %% Router/Logic Nodes: Black Fill, Light Blue Border, White Text
+    style B fill:#000,stroke:#add8e6,stroke-width:2px,color:#fff
+    style F fill:#000,stroke:#add8e6,stroke-width:2px,color:#fff
+    style I fill:#000,stroke:#add8e6,stroke-width:2px,color:#fff
+
+    %% Final Output: Black Fill, Purple/Blue Border, White Text
+    style K fill:#000,stroke:#bbf,stroke-width:2px,color:#fff
+
+    %% Subgraph: Very Dark Gray Fill (to distinguish from main bg), White Text
+    style Knowledge_Engine fill:#1a1a1a,stroke:#ccc,stroke-dasharray: 5 5,color:#fff
 ```
 
 ## Tech Stack
