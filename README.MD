@@ -58,14 +58,14 @@ Because we use **Redis Checkpointing**, the graph remembers the state of the con
 
 ## Architecture
 
-The agent uses LangGraph for the workflow:
+The agent uses LangGraph for the workflow and Server-Sent Events (SSE) to stream real-time updates to the UI:
 
 1. **Router**: LLM classifies query intent.
 2. **Branches**:
    - Incomplete → Clarifier (asks for more info).
    - General → Handles greetings/small talk.
    - Medical → Retrieve → Grade → (Web Search if needed) → Generate → Hallucination Check → Guardrail (with loopback on hallucination failure).
-3. **Output**: Response with disclaimer if needed.
+3. **Output**: Streams "thinking steps" (e.g., Retrieving..., Grading...) followed by the final response. Responds with disclaimer if needed.
 
 ### Architecture Diagram
 
