@@ -4,9 +4,9 @@ export const API_BASE_URL = "http://localhost:8000";
 
 export const nodeToLabel: Record<string, string> = {
   router: "Analyzing Request",
-  retrieve: "Retrieving Medical Records",
+  retrieve: "Retrieving Relevant Documents",
   grade: "Evaluating Relevance",
-  web_search: "Searching Medical Databases",
+  web_search: "Searching The Web",
   hallucination_check: "Fact Checking",
   generate: "Synthesizing Response",
   guardrail: "Safety Verification",
