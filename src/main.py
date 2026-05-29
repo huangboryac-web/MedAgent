@@ -18,7 +18,7 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """应用生命周期管理"""
-    logger.info(f"MedAgent 启动中... 环境: {settings.app_env}")
+    logger.info(f"MedAgent starting... environment: {settings.app_env}")
     yield
     logger.info("MedAgent 关闭中...")
 
