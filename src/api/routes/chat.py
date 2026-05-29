@@ -48,8 +48,8 @@ async def send_message(req: ChatRequest) -> ChatResponse:
         result = await graph.run(session_id=session_id, user_message=req.message)
         return ChatResponse(
             session_id=session_id,
-            response=result.final_response,
-            safety_warnings=result.safety.warnings if not result.safety.safe else [],
+            response=result.get("final_response", ""),
+            safety_warnings=result.get("safety", {}).get("warnings", []),
         )
     except Exception as e:
         logger.error(f"对话处理失败: {e}")

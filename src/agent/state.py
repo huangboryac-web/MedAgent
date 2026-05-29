@@ -65,10 +65,26 @@ class AgentState(BaseModel):
     error: Optional[str] = None
 
 
-def create_initial_state(session_id: str, user_message: str) -> AgentState:
-    """创建初始 Agent 状态"""
-    return AgentState(
-        session_id=session_id,
-        user_message=user_message,
-        messages=[],
-    )
+def create_initial_state(session_id: str, user_message: str) -> dict:
+    """创建初始 Agent 状态（返回 dict 以兼容 LangGraph）"""
+    return {
+        "session_id": session_id,
+        "user_message": user_message,
+        "messages": [],
+        "intent": "general",
+        "symptom_severity": "mild",
+        "search_queries": [],
+        "knowledge_results": [],
+        "academic_results": [],
+        "cross_validation_passed": False,
+        "hallucination_checked": False,
+        "final_response": "",
+        "safety": {
+            "safe": True,
+            "risk_level": "none",
+            "warnings": [],
+            "disclaimer_required": False,
+        },
+        "metadata": {},
+        "error": None,
+    }

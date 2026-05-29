@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.routes.chat import router as chat_router
+from src.api.routes.enhanced_chat import router as enhanced_chat_router
 from src.config import get_settings
 from src.utils.logger import logger
 
@@ -40,6 +41,7 @@ app.add_middleware(
 
 # 注册路由
 app.include_router(chat_router)
+app.include_router(enhanced_chat_router)
 
 
 @app.get("/health")
