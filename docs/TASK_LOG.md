@@ -22,11 +22,11 @@
 ### 1.2 基础框架开发
 | 状态 | 日期 | 任务ID | 任务描述 | 负责人 | 备注 |
 |------|------|--------|----------|--------|------|
-| DOING | 2026-05-29 | PH1-101 | FastAPI应用框架搭建 | Marvis | 聊天路由已实现，SSE流式支持 |
-| DOING | 2026-05-29 | PH1-102 | 配置管理系统开发 | Marvis | src/config.py 基于 pydantic-settings |
-| DOING | 2026-05-29 | PH1-103 | 日志系统集成 | Marvis | src/utils/logger.py 基于 loguru |
-| TODO | - | PH1-104 | 异常处理中间件 | - | |
-| TODO | - | PH1-105 | 健康检查接口 | - | |
+| DONE | 2026-05-29 | PH1-101 | FastAPI应用框架搭建 | Marvis | src/main.py + SSE流式聊天路由 |
+| DONE | 2026-05-29 | PH1-102 | 配置管理系统开发 | Marvis | src/config.py 基于 pydantic-settings |
+| DONE | 2026-05-29 | PH1-103 | 日志系统集成 | Marvis | src/utils/logger.py 基于 loguru |
+| DONE | 2026-05-29 | PH1-104 | 异常处理中间件 | Marvis | src/utils/middleware.py 全局异常捕获 |
+| DONE | 2026-05-29 | PH1-105 | 健康检查接口 | Marvis | GET /health 返回服务状态 |
 
 ### 1.3 基础测试
 | 状态 | 日期 | 任务ID | 任务描述 | 负责人 | 备注 |
