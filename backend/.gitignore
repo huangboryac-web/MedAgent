@@ -1,8 +1,0 @@
-env
-.env
-*.db
-__pycache__
-*.sh
-*.json
-chroma_db
-logs/*
