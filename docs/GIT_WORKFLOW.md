@@ -3,6 +3,7 @@
 ## 1. Git初始化
 
 ### 1.1 仓库创建
+
 ```bash
 cd C:\Users\22334\Downloads\health
 git init
@@ -10,9 +11,11 @@ git checkout -b main
 ```
 
 ### 1.2 .gitignore 配置
+
 项目根目录必须包含`.gitignore`文件，内容见下方。
 
 ### 1.3 初始提交
+
 ```bash
 git add .
 git commit -m "chore: 初始化项目结构和文档"
@@ -44,6 +47,7 @@ main (生产)
 ## 3. 开发流程
 
 ### 3.1 新功能开发流程
+
 ```bash
 # 1. 从develop创建功能分支
 git checkout develop
@@ -65,6 +69,7 @@ git push origin feature/PH2-001-langgraph-agent
 ```
 
 ### 3.2 Bug修复流程
+
 ```bash
 # 1. 从develop创建修复分支
 git checkout develop
@@ -81,6 +86,7 @@ git push origin bugfix/issue-42-fix-hallucination
 ```
 
 ### 3.3 紧急修复流程
+
 ```bash
 # 1. 从main创建hotfix分支
 git checkout main
@@ -105,6 +111,7 @@ git branch -d hotfix/critical-safety-fix
 ## 4. 提交规范
 
 ### 4.1 提交信息模板
+
 ```
 <type>(<scope>): <subject>
 <空行>
@@ -114,18 +121,20 @@ git branch -d hotfix/critical-safety-fix
 ```
 
 ### 4.2 类型定义
-| 类型 | 说明 | 示例 |
-|------|------|------|
-| feat | 新功能 | feat(agent): 添加症状分析节点 |
-| fix | Bug修复 | fix(safety): 修复高危症状误报 |
-| docs | 文档更新 | docs(prd): 更新功能需求 |
-| style | 代码格式 | style(agent): 统一导入格式 |
-| refactor | 重构 | refactor(knowledge): 重构检索管道 |
-| test | 测试 | test(api): 添加症状分析测试 |
-| chore | 构建/工具 | chore(deps): 更新依赖版本 |
-| perf | 性能优化 | perf(search): 优化检索延迟 |
+
+| 类型       | 说明    | 示例                          |
+| -------- | ----- | --------------------------- |
+| feat     | 新功能   | feat(agent): 添加症状分析节点       |
+| fix      | Bug修复 | fix(safety): 修复高危症状误报       |
+| docs     | 文档更新  | docs(prd): 更新功能需求           |
+| style    | 代码格式  | style(agent): 统一导入格式        |
+| refactor | 重构    | refactor(knowledge): 重构检索管道 |
+| test     | 测试    | test(api): 添加症状分析测试         |
+| chore    | 构建/工具 | chore(deps): 更新依赖版本         |
+| perf     | 性能优化  | perf(search): 优化检索延迟        |
 
 ### 4.3 提交频率要求
+
 - **最少**：每天至少提交一次（有代码变更时）
 - **最多**：每个功能点一次提交（通过Squash合并规范）
 
@@ -134,6 +143,7 @@ git branch -d hotfix/critical-safety-fix
 ## 5. 代码审查流程
 
 ### 5.1 PR模板
+
 ```markdown
 ## 变更类型
 - [ ] 新功能
@@ -166,6 +176,7 @@ PH2-001 (智能体编排开发)
 ```
 
 ### 5.2 审查要点
+
 - [ ] 代码逻辑正确性
 - [ ] 边界条件处理
 - [ ] 错误处理完善
@@ -260,6 +271,7 @@ coverage.xml
 ## 7. 常用Git命令速查
 
 ### 7.1 分支操作
+
 ```bash
 # 查看所有分支
 git branch -a
@@ -278,6 +290,7 @@ git push origin --delete <branch-name>
 ```
 
 ### 7.2 提交相关
+
 ```bash
 # 查看状态
 git status
@@ -302,6 +315,7 @@ git reset HEAD <file>
 ```
 
 ### 7.3 合并与变基
+
 ```bash
 # 合并分支
 git merge <branch-name>
@@ -318,6 +332,7 @@ git rebase --abort
 ```
 
 ### 7.4 远程操作
+
 ```bash
 # 添加远程仓库
 git remote add origin <url>
@@ -337,6 +352,7 @@ git push --force-with-lease origin <branch-name>
 ```
 
 ### 7.5 暂存与恢复
+
 ```bash
 # 暂存当前工作
 git stash
@@ -356,6 +372,7 @@ git stash apply stash@{0}
 ## 8. CI/CD集成（后续实现）
 
 ### 8.1 GitHub Actions工作流
+
 ```yaml
 name: CI
 on:
@@ -371,7 +388,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           pytest tests/
-  
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -383,6 +400,7 @@ jobs:
 ```
 
 ### 8.2 提交前检查 (pre-commit hooks)
+
 ```yaml
 # .pre-commit-config.yaml
 repos:
