@@ -16,14 +16,14 @@ MedAgent API Edition 是一个全API调用的专业医疗AI助手系统，采用
 
 ## 技术栈
 
-| 组件 | 技术 |
-|------|------|
-| 后端框架 | FastAPI |
-| 智能体编排 | LangGraph |
-| 大模型 | GPT-4o / Claude API |
+| 组件    | 技术                  |
+| ----- | ------------------- |
+| 后端框架  | FastAPI             |
+| 智能体编排 | LangGraph           |
+| 大模型   | GPT-4o / Claude API |
 | 向量数据库 | Pinecone / Weaviate |
-| 缓存 | Redis |
-| 数据库 | PostgreSQL |
+| 缓存    | Redis               |
+| 数据库   | PostgreSQL          |
 
 ## 快速开始
 
