@@ -15,16 +15,16 @@
 | DONE | 2026-05-29 | PH1-001 | 项目目录结构创建 | Marvis | 基础目录已创建 |
 | DONE | 2026-05-29 | PH1-002 | 项目文档编写(PRD/TASK/DEV_GUIDE/GIT) | Marvis | 4个核心文档完成 |
 | DONE | 2026-05-29 | PH1-003 | Git仓库初始化及分支策略设置 | Marvis | main/develop/feature分支创建 |
-| TODO | - | PH1-004 | Python虚拟环境搭建 | - | |
-| TODO | - | PH1-005 | 依赖管理(pyproject.toml/requirements.txt) | - | |
-| TODO | - | PH1-006 | 环境变量配置(.env) | - | |
+| DONE | 2026-05-29 | PH1-004 | Python虚拟环境搭建 | Marvis | venv 虚拟环境已创建 |
+| DONE | 2026-05-29 | PH1-005 | 依赖管理(requirements.txt) | Marvis | 含 FastAPI/LangGraph/向量库/Redis |
+| DONE | 2026-05-29 | PH1-006 | 环境变量配置(.env) | Marvis | .env.example 已创建，pydantic-settings 加载 |
 
 ### 1.2 基础框架开发
 | 状态 | 日期 | 任务ID | 任务描述 | 负责人 | 备注 |
 |------|------|--------|----------|--------|------|
-| TODO | - | PH1-101 | FastAPI应用框架搭建 | - | |
-| TODO | - | PH1-102 | 配置管理系统开发 | - | |
-| TODO | - | PH1-103 | 日志系统集成 | - | |
+| DOING | 2026-05-29 | PH1-101 | FastAPI应用框架搭建 | Marvis | 聊天路由已实现，SSE流式支持 |
+| DOING | 2026-05-29 | PH1-102 | 配置管理系统开发 | Marvis | src/config.py 基于 pydantic-settings |
+| DOING | 2026-05-29 | PH1-103 | 日志系统集成 | Marvis | src/utils/logger.py 基于 loguru |
 | TODO | - | PH1-104 | 异常处理中间件 | - | |
 | TODO | - | PH1-105 | 健康检查接口 | - | |
 
