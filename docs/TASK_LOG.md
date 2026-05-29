@@ -12,9 +12,9 @@
 ### 1.1 项目初始化
 | 状态 | 日期 | 任务ID | 任务描述 | 负责人 | 备注 |
 |------|------|--------|----------|--------|------|
-| DOING | 2026-05-29 | PH1-001 | 项目目录结构创建 | Marvis | 基础目录已创建 |
-| TODO | 2026-05-29 | PH1-002 | 项目文档编写(PRD/TASK/DEV_GUIDE/GIT) | Marvis | |
-| TODO | - | PH1-003 | Git仓库初始化及分支策略设置 | Marvis | |
+| DONE | 2026-05-29 | PH1-001 | 项目目录结构创建 | Marvis | 基础目录已创建 |
+| DONE | 2026-05-29 | PH1-002 | 项目文档编写(PRD/TASK/DEV_GUIDE/GIT) | Marvis | 4个核心文档完成 |
+| DONE | 2026-05-29 | PH1-003 | Git仓库初始化及分支策略设置 | Marvis | main/develop/feature分支创建 |
 | TODO | - | PH1-004 | Python虚拟环境搭建 | - | |
 | TODO | - | PH1-005 | 依赖管理(pyproject.toml/requirements.txt) | - | |
 | TODO | - | PH1-006 | 环境变量配置(.env) | - | |
